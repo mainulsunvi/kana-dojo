@@ -111,19 +111,23 @@ const KanjiPickGame = ({ selectedKanjiObjs, isHidden }: KanjiPickGameProps) => {
     state => state.selectedKanjiCollection
   );
 
-  const { score, setScore, incrementKanjiCorrect, recordAnswerTime, incrementWrongStreak, resetWrongStreak } =
-    useStatsStore(
-      useShallow(state => ({
-        score: state.score,
-        setScore: state.setScore,
-        incrementKanjiCorrect: state.incrementKanjiCorrect,
-        recordAnswerTime: state.recordAnswerTime,
-        incrementWrongStreak: state.incrementWrongStreak,
-        resetWrongStreak: state.resetWrongStreak
-      }))
-    );
-      }))
-    );
+  const {
+    score,
+    setScore,
+    incrementKanjiCorrect,
+    recordAnswerTime,
+    incrementWrongStreak,
+    resetWrongStreak
+  } = useStatsStore(
+    useShallow(state => ({
+      score: state.score,
+      setScore: state.setScore,
+      incrementKanjiCorrect: state.incrementKanjiCorrect,
+      recordAnswerTime: state.recordAnswerTime,
+      incrementWrongStreak: state.incrementWrongStreak,
+      resetWrongStreak: state.resetWrongStreak
+    }))
+  );
 
   const speedStopwatch = useStopwatch({ autoStart: false });
 

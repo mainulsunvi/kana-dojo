@@ -11,7 +11,11 @@
 !.yarn/releases
 !.yarn/versions
 
+# AI assistant folders/files
+/.agent
+/.claude
 /.kiro
+/AI.md
 
 # testing
 /coverage
