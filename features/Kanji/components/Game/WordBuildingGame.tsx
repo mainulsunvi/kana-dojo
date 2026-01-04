@@ -513,7 +513,13 @@ const KanjiWordBuildingGame = ({
 
       {/* Answer Row Area - shows placed tiles */}
       <div className='flex w-full flex-col items-center'>
-        <div className='flex min-h-[5rem] w-full items-center border-b-2 border-[var(--border-color)] px-2 pb-2 md:w-3/4 lg:w-2/3 xl:w-1/2'>
+        <div
+          className={clsx(
+            'flex w-full items-center border-b-2 border-[var(--border-color)] px-2 pb-2 md:w-3/4 lg:w-2/3 xl:w-1/2',
+            // Use taller min-height when in reverse mode (kanji tiles have larger font size)
+            isReverse ? 'min-h-[5.5rem]' : 'min-h-[5rem]'
+          )}
+        >
           <motion.div
             className='flex flex-row flex-wrap justify-start gap-3'
             variants={celebrationContainerVariants}
