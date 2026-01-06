@@ -18,6 +18,7 @@ export type {
 export { default as ThemesModal } from './components/ThemesModal';
 
 // Data (read-only) - Note: Import defaults, not named exports
+export { default as themeSets } from './data/themes';
 // export { default as themes } from './data/themes';
 // export { default as fonts } from './data/fonts';
 
