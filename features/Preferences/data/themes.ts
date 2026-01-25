@@ -1259,11 +1259,17 @@ const baseThemeSets: BaseThemeGroup[] = [
         secondaryColor: 'oklch(88.0% 0.065 210.0 / 1)',
       },
       {
-  id: 'paper-lantern',
-  backgroundColor: 'oklch(94.0% 0.010 95.0 / 1)',
-  mainColor: 'oklch(55.0% 0.095 55.0 / 1)',
-  secondaryColor: 'oklch(68.0% 0.085 30.0 / 1)'
-},
+        id: 'midnight-sushi',
+        backgroundColor: 'oklch(15.0% 0.028 255.0 / 1)',
+        mainColor: 'oklch(82.0% 0.155 210.0 / 1)',
+        secondaryColor: 'oklch(70.0% 0.145 35.0 / 1)',
+      },
+      {
+        id: 'paper-lantern',
+        backgroundColor: 'oklch(94.0% 0.010 95.0 / 1)',
+        mainColor: 'oklch(55.0% 0.095 55.0 / 1)',
+        secondaryColor: 'oklch(68.0% 0.085 30.0 / 1)'
+      },
     ],
   },
   {
