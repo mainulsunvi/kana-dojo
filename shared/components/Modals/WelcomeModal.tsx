@@ -476,7 +476,7 @@ const WelcomeModal = () => {
                           return (
                             <button
                               key={theme.id}
-                              className='cursor-pointer rounded-lg p-3 transition-all duration-200 hover:opacity-90 active:scale-95'
+                              className='cursor-pointer rounded-lg p-3 transition-all duration-100 hover:opacity-90'
                               style={{
                                 ...(wallpaper
                                   ? wallpaperStyles
