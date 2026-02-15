@@ -4,6 +4,9 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/shared/lib/utils';
 import { ActionButton } from '@/shared/components/ui/ActionButton';
+import { kana } from '@/features/Kana/data/kana';
+import useKanjiStore from '@/features/Kanji/store/useKanjiStore';
+import useVocabStore from '@/features/Vocabulary/store/useVocabStore';
 import type {
   CharacterMasteryItem,
   ContentFilter,
@@ -59,6 +62,31 @@ const MASTERY_CONFIG: Record<
     opacity: 0.5,
   },
 };
+
+const JAPANESE_CHAR_REGEX = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/;
+
+function isJapaneseText(value: string): boolean {
+  return JAPANESE_CHAR_REGEX.test(value);
+}
+
+function buildRomajiToKanaMap(): Map<string, string> {
+  const romajiToKana = new Map<string, string>();
+
+  kana.forEach(group => {
+    group.romanji.forEach((romaji, index) => {
+      const normalizedRomaji = romaji.trim().toLowerCase();
+      if (!normalizedRomaji) return;
+
+      if (!romajiToKana.has(normalizedRomaji)) {
+        romajiToKana.set(normalizedRomaji, group.kana[index]);
+      }
+    });
+  });
+
+  return romajiToKana;
+}
+
+const ROMAJI_TO_KANA = buildRomajiToKanaMap();
 
 /**
  * Transforms raw character mastery data into CharacterMasteryItem array
@@ -121,9 +149,79 @@ export default function CharacterMasteryPanel({
 }: CharacterMasteryPanelProps) {
   const [contentFilter, setContentFilter] = useState<ContentFilter>('all');
 
+  const selectedKanjiObjs = useKanjiStore(state => state.selectedKanjiObjs);
+  const selectedVocabObjs = useVocabStore(state => state.selectedVocabObjs);
+
+  const meaningToJapaneseMap = useMemo(() => {
+    const map = new Map<string, string>();
+
+    selectedKanjiObjs.forEach(kanjiObj => {
+      kanjiObj.meanings.forEach(meaning => {
+        const normalizedMeaning = meaning.trim().toLowerCase();
+        if (!normalizedMeaning) return;
+        if (!map.has(normalizedMeaning)) {
+          map.set(normalizedMeaning, kanjiObj.kanjiChar);
+        }
+      });
+    });
+
+    selectedVocabObjs.forEach(vocabObj => {
+      vocabObj.meanings.forEach(meaning => {
+        const normalizedMeaning = meaning.trim().toLowerCase();
+        if (!normalizedMeaning) return;
+        if (!map.has(normalizedMeaning)) {
+          map.set(normalizedMeaning, vocabObj.word);
+        }
+      });
+    });
+
+    return map;
+  }, [selectedKanjiObjs, selectedVocabObjs]);
+
+  const mergedCharacterMastery = useMemo(() => {
+    const merged = new Map<string, { correct: number; incorrect: number }>();
+
+    const resolveJapaneseKey = (rawKey: string): string | null => {
+      const trimmed = rawKey.trim();
+      if (!trimmed) return null;
+
+      if (isJapaneseText(trimmed)) {
+        return trimmed;
+      }
+
+      const normalizedKey = trimmed.toLowerCase();
+      const kanaMatch = ROMAJI_TO_KANA.get(normalizedKey);
+      if (kanaMatch) {
+        return kanaMatch;
+      }
+
+      const meaningMatch = meaningToJapaneseMap.get(normalizedKey);
+      if (meaningMatch) {
+        return meaningMatch;
+      }
+
+      return null;
+    };
+
+    Object.entries(characterMastery).forEach(([rawKey, stats]) => {
+      const japaneseKey = resolveJapaneseKey(rawKey);
+      if (!japaneseKey) {
+        return;
+      }
+
+      const current = merged.get(japaneseKey) ?? { correct: 0, incorrect: 0 };
+      merged.set(japaneseKey, {
+        correct: current.correct + stats.correct,
+        incorrect: current.incorrect + stats.incorrect,
+      });
+    });
+
+    return Object.fromEntries(merged);
+  }, [characterMastery, meaningToJapaneseMap]);
+
   const allCharacters = useMemo(
-    () => transformCharacterData(characterMastery),
-    [characterMastery],
+    () => transformCharacterData(mergedCharacterMastery),
+    [mergedCharacterMastery],
   );
 
   const filteredCharacters = useMemo(() => {
